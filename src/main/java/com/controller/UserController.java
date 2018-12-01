@@ -57,7 +57,7 @@ public class UserController extends HttpServlet {
             // 解决上传文件名的中文乱码
             upload.setHeaderEncoding("UTF-8");
             factory.setSizeThreshold(1024 * 500);// 设置内存的临界值为500K
-            String tempPath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent\\linshi";
+            String tempPath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/linshi";
             File linshi = new File(tempPath);// 当超过500K的时候，存到一个临时文件夹中
             if (!linshi.exists() || !linshi.isDirectory()) {
                 linshi.mkdirs();
@@ -69,7 +69,7 @@ public class UserController extends HttpServlet {
             Integer quality = 1;
             String uid = getUUID();
             String realFilename = null;
-            String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent\\srcImage";
+            String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/srcImage";
             try {
                 // 1. 得到 FileItem 的集合 items
                 List<FileItem> items = upload.parseRequest(request);
@@ -109,7 +109,7 @@ public class UserController extends HttpServlet {
                         if (!path.exists() || !path.isDirectory()) {
                             path.mkdirs();
                         }
-                        fileName = filePath + "\\" + realFilename;// 文件最终上传的位置
+                        fileName = filePath + "/" + realFilename;// 文件最终上传的位置
                         System.out.println(fileName);
                         OutputStream out = new FileOutputStream(fileName);
                         while ((len = in.read(buffer)) != -1) {
@@ -136,7 +136,7 @@ public class UserController extends HttpServlet {
                     text = "爱";
                 }
                 // 创建新图片
-                String newImageSrc = resultStr.substring(0, resultStr.lastIndexOf("\\") + 1) + uid + "_"
+                String newImageSrc = resultStr.substring(0, resultStr.lastIndexOf("/") + 1) + uid + "_"
                         + "newImage.jpg";
                 createImage(srcImageWidth * quality / 3, srcImageHeight * quality / 3, newImageSrc);
                 // 读取图片文件，得到BufferedImage对象
@@ -174,18 +174,18 @@ public class UserController extends HttpServlet {
                 }
                 session.setAttribute("realFilename", realFilename);
                 // 保存新图片
-                String newImgPath = newImageSrc.substring(0, newImageSrc.lastIndexOf("\\"));
-                newImgPath = newImgPath.substring(0, newImgPath.lastIndexOf("\\") + 1) + "resultImg";
+                String newImgPath = newImageSrc.substring(0, newImageSrc.lastIndexOf("/"));
+                newImgPath = newImgPath.substring(0, newImgPath.lastIndexOf("/") + 1) + "resultImg";
                 File newImgPathFile = new File(newImgPath);
                 if (!newImgPathFile.exists() || !newImgPathFile.isDirectory()) {
                     newImgPathFile.mkdirs();
                 }
-                ImageIO.write(bimg, "JPG", new FileOutputStream(newImgPath + "\\" + realFilename));
+                ImageIO.write(bimg, "JPG", new FileOutputStream(newImgPath + "/" + realFilename));
                 is.close();
                 for (int i = 0; i < 10; i++) {
                     System.gc();
                 }
-                File backgroundImg = new File(filePath + "\\" + uid + "_" + "newImage.jpg");
+                File backgroundImg = new File(filePath + "/" + uid + "_" + "newImage.jpg");
                 if (backgroundImg.exists() && backgroundImg.isFile()) {
                     if (backgroundImg.delete()) {
                         System.out.println("删除背景图成功");
@@ -203,11 +203,11 @@ public class UserController extends HttpServlet {
         } else {
             // 下载图片
             String filename = request.getParameter("realFilename");
-            String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent\\resultImg";
+            String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/resultImg";
             // 设置响应头，控制浏览器下载该文件
             response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
             // 读取要下载的文件，保存到文件输入流
-            FileInputStream in = new FileInputStream(filePath + "\\" + filename);
+            FileInputStream in = new FileInputStream(filePath + "/" + filename);
             // 创建输出流
             OutputStream out = response.getOutputStream();
             // 创建缓冲区
