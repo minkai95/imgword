@@ -145,7 +145,7 @@ public class UserController extends HttpServlet {
                 Graphics2D g2d = (Graphics2D) bimg.getGraphics();
                 // 设置画笔粗细
                 g2d.setStroke(new BasicStroke(1));
-                g2d.setFont(new Font("华文宋体", Font.PLAIN, 12));
+                g2d.setFont(new Font("宋体", Font.PLAIN, 12));
                 int size = 0;
                 if (quality == 1) {
                     size = 36;
