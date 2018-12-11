@@ -199,6 +199,7 @@ public class UserController extends HttpServlet {
                 response.sendRedirect("/result.jsp");
             } else {
                 System.out.println("转换失败");
+                response.sendRedirect("/index.jsp");
             }
         } else {
             // 下载图片
