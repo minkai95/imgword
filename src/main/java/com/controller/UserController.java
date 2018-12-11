@@ -5,12 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +24,9 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 @WebServlet(name = "/UserController", urlPatterns = { "/UserController" })
 public class UserController extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -44,10 +42,13 @@ public class UserController extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("text/json; charset=utf-8");
+        PrintWriter printWriter = response.getWriter();
+        JSONArray jsonArray = new JSONArray();
+
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
         if ("upload".equals(action)) {
-            response.setContentType("text/html;charset=utf-8");
             response.setCharacterEncoding("UTF-8");
             request.setCharacterEncoding("UTF-8");
             // 1、创建一个DiskFileItemFactory工厂
@@ -99,7 +100,13 @@ public class UserController extends HttpServlet {
                         fileFormat.add("jpeg");
                         if (!fileFormat.contains(fileExtName.toLowerCase())) {
                             session.setAttribute("message", "上传失败,文件类型不合法！");
-                            break;
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("message","上传失败,文件类型不合法");
+                            jsonArray.add(jsonObject);
+                            printWriter = response.getWriter();
+                            printWriter.println(jsonArray);
+                            printWriter.close();
+                            return;
                         }
                         InputStream in = item.getInputStream();
                         byte[] buffer = new byte[1024];
@@ -117,13 +124,22 @@ public class UserController extends HttpServlet {
                         }
                         out.close();
                         in.close();
-                        session.setAttribute("message", "上传成功");
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("message","上传成功");
+                        jsonArray.add(jsonObject);
+                        session.setAttribute("message","上传成功");
                         resultStr = fileName;
                     }
                 }
             } catch (FileUploadException e) {
-                session.setAttribute("message", "上传失败");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("message","上传失败");
+                jsonArray.add(jsonObject);
+                printWriter = response.getWriter();
+                printWriter.println(jsonArray);
+                printWriter.close();
                 e.printStackTrace();
+                return;
             }
             int srcImageHeight;
             int srcImageWidth;
@@ -196,13 +212,26 @@ public class UserController extends HttpServlet {
                 System.out.println("输出新图片");
             }
             if ("上传成功".equals(session.getAttribute("message"))) {
-                response.sendRedirect("/result.jsp");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("targetFile","/WebContent/resultImg/"+realFilename);
+                jsonArray.add(jsonObject);
+                printWriter = response.getWriter();
+                printWriter.println(jsonArray);
+                printWriter.close();
+                //response.sendRedirect("/result.jsp");
             } else {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("changeMsg","转换失败");
+                jsonArray.add(jsonObject);
+                printWriter = response.getWriter();
+                printWriter.println(jsonArray);
+                printWriter.close();
                 System.out.println("转换失败");
-                response.sendRedirect("/index.jsp");
+                //response.sendRedirect("/index.jsp");
             }
         } else {
             // 下载图片
+            response.reset();
             String filename = request.getParameter("realFilename");
             String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/resultImg";
             // 设置响应头，控制浏览器下载该文件
@@ -236,7 +265,7 @@ public class UserController extends HttpServlet {
      * @return 返回包含rgb 颜色分量值的数组。元素 index 由小到大分别对应 r，g，b。
      */
     public static int[] getRGB(BufferedImage image, int x, int y) {
-        System.out.println(x + " " + y);
+        //System.out.println(x + " " + y);
         int[] rgb = new int[3];
         int pixel = image.getRGB(x, y);
         rgb[0] = (pixel & 0xff0000) >> 16;
