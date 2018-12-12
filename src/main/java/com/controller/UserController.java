@@ -228,6 +228,7 @@ public class UserController extends HttpServlet {
             String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/resultImg";
             // 设置响应头，控制浏览器下载该文件
             response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+            // response.setHeader("content-type", "image/jpg");
             // 读取要下载的文件，保存到文件输入流
             FileInputStream in = new FileInputStream(filePath + "/" + filename);
             // 创建输出流
