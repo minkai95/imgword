@@ -244,11 +244,6 @@ public class UserController extends HttpServlet {
             in.close();
             // 关闭输出流
             out.close();
-            jsonObject.put("message","下载成功");
-            printWriter = response.getWriter();
-            printWriter.println(jsonObject);
-            printWriter.close();
-            System.out.println("下载成功！");
         }
     }
 
