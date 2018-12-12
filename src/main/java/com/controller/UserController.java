@@ -44,7 +44,7 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/json; charset=utf-8");
         // 允许跨域
-        setResponseAccess(resp);
+        // setResponseAccess(resp);
         PrintWriter printWriter = response.getWriter();
         JSONObject jsonObject = new JSONObject();
         HttpSession session = request.getSession();
