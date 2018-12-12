@@ -199,7 +199,8 @@ public class UserController extends HttpServlet {
                 if (!newImgPathFile.exists() || !newImgPathFile.isDirectory()) {
                     newImgPathFile.mkdirs();
                 }
-                ImageIO.write(bimg, "JPG", new FileOutputStream(newImgPath + "/" + realFilename));
+		String finalImgPath = newImgPath + "/" + realFilename;
+                ImageIO.write(bimg, "JPG", new FileOutputStream(finalImgPath));
                 is.close();
                 for (int i = 0; i < 10; i++) {
                     System.gc();
@@ -213,6 +214,13 @@ public class UserController extends HttpServlet {
                     }
                 }
                 System.out.println("输出新图片");
+		// 将文件copy到磁盘中
+		String resultImgDisk = "/developer/imgwordFile/resultImg/";
+		File resultImgDiskPath = new File(resultImgDisk);
+		if (!resultImgDiskPath.exists() || !resultImgDiskPath.isDirectory()) {
+		    resultImgDiskPath.mkdirs();
+		}
+		copyImg(finalImgPath,resultImgDisk+realFilename);
             }
             if ("上传成功".equals(session.getAttribute("message"))) {
                 jsonObject.put("targetFile","http://imgword.codeplus.club/WebContent/resultImg/"+realFilename);
