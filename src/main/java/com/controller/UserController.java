@@ -44,7 +44,6 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-        JSONArray jsonArray = new JSONArray();
 
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
@@ -102,9 +101,9 @@ public class UserController extends HttpServlet {
                             session.setAttribute("message", "上传失败,文件类型不合法！");
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("message","上传失败,文件类型不合法");
-                            jsonArray.add(jsonObject);
+
                             printWriter = response.getWriter();
-                            printWriter.println(jsonArray);
+                            printWriter.println(jsonObject);
                             printWriter.close();
                             return;
                         }
@@ -126,7 +125,6 @@ public class UserController extends HttpServlet {
                         in.close();
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("message","上传成功");
-                        jsonArray.add(jsonObject);
                         session.setAttribute("message","上传成功");
                         resultStr = fileName;
                     }
@@ -134,9 +132,8 @@ public class UserController extends HttpServlet {
             } catch (FileUploadException e) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("message","上传失败");
-                jsonArray.add(jsonObject);
                 printWriter = response.getWriter();
-                printWriter.println(jsonArray);
+                printWriter.println(jsonObject);
                 printWriter.close();
                 e.printStackTrace();
                 return;
@@ -213,18 +210,16 @@ public class UserController extends HttpServlet {
             }
             if ("上传成功".equals(session.getAttribute("message"))) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("targetFile","/WebContent/resultImg/"+realFilename);
-                jsonArray.add(jsonObject);
+                jsonObject.put("targetFile","http://imgword.codeplus.club/WebContent/resultImg/"+realFilename);
                 printWriter = response.getWriter();
-                printWriter.println(jsonArray);
+                printWriter.println(jsonObject);
                 printWriter.close();
                 //response.sendRedirect("/result.jsp");
             } else {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("changeMsg","转换失败");
-                jsonArray.add(jsonObject);
                 printWriter = response.getWriter();
-                printWriter.println(jsonArray);
+                printWriter.println(jsonObject);
                 printWriter.close();
                 System.out.println("转换失败");
                 //response.sendRedirect("/index.jsp");
