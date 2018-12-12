@@ -23,8 +23,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @WebServlet(name = "/UserController", urlPatterns = { "/UserController" })
@@ -246,6 +244,10 @@ public class UserController extends HttpServlet {
             in.close();
             // 关闭输出流
             out.close();
+            jsonObject.put("message","下载成功");
+            printWriter = response.getWriter();
+            printWriter.println(jsonObject);
+            printWriter.close();
             System.out.println("下载成功！");
         }
     }
