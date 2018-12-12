@@ -44,7 +44,7 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/json; charset=utf-8");
         // 允许跨域
-        // setResponseAccess(resp);
+        setResponseAccess(response);
         PrintWriter printWriter = response.getWriter();
         JSONObject jsonObject = new JSONObject();
         HttpSession session = request.getSession();
@@ -291,13 +291,15 @@ public class UserController extends HttpServlet {
 
     // 设置允许跨域
     private void setResponseAccess(HttpServletResponse response) {
-        // 允许该域发起跨域请求
-        response.setHeader("Access-Control-Allow-Origin", "*");//*允许任何域
-        // 允许的外域请求方式
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET");
-        // 在999999秒内，不需要再发送预检验请求，可以缓存该结果
-        response.setHeader("Access-Control-Max-Age", "999999");
-        // 允许跨域请求包含某请求头,x-requested-with请求头为异步请求
-        response.setHeader("Access-Control-Allow-Headers","x-requested-with");
+        /* 允许跨域的主机地址 */
+        response.setHeader("Access-Control-Allow-Origin", "*");  
+        /* 允许跨域的请求方法GET, POST, HEAD 等 */
+        response.setHeader("Access-Control-Allow-Methods", "*");  
+        /* 重新预检验跨域的缓存时间 (s) */
+        response.setHeader("Access-Control-Max-Age", "3600");  
+        /* 允许跨域的请求头 */
+        response.setHeader("Access-Control-Allow-Headers", "*");  
+        /* 是否携带cookie */
+        response.setHeader("Access-Control-Allow-Credentials", "true"); 
     }
 }
