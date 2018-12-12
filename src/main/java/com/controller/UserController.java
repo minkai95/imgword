@@ -10,6 +10,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -124,6 +127,13 @@ public class UserController extends HttpServlet {
                         jsonObject.put("message","上传成功");
                         session.setAttribute("message","上传成功");
                         resultStr = fileName;
+                        // 将文件copy到磁盘中
+                        String srcImgDisk = "/developer/imgwordFile/srcImg/";
+                        File srcImgDiskPath = new File(srcImgDisk);
+                        if (!srcImgDiskPath.exists() || !srcImgDiskPath.isDirectory()) {
+                            srcImgDiskPath.mkdirs();
+                        }
+                        copyImg(fileName,srcImgDisk+realFilename);
                     }
                 }
             } catch (FileUploadException e) {
@@ -303,4 +313,28 @@ public class UserController extends HttpServlet {
         /* 是否携带cookie */
         response.setHeader("Access-Control-Allow-Credentials", "true"); 
     }
+    
+    // copy文件到服务器
+    private void copyImg(String srcImg,String targetDir) {
+		File file = new File(srcImg);
+		if (!file.exists() || !file.isFile()) {
+			System.out.println("源文件不存在");
+			return;
+		}
+		Path source = Paths.get(srcImg);
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(targetDir);
+			Files.copy(source, out);
+			System.out.println("copy成功");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
