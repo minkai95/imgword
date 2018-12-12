@@ -44,7 +44,7 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/json; charset=utf-8");
         PrintWriter printWriter = response.getWriter();
-
+        JSONObject jsonObject = new JSONObject();
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
         if ("upload".equals(action)) {
@@ -99,9 +99,7 @@ public class UserController extends HttpServlet {
                         fileFormat.add("jpeg");
                         if (!fileFormat.contains(fileExtName.toLowerCase())) {
                             session.setAttribute("message", "上传失败,文件类型不合法！");
-                            JSONObject jsonObject = new JSONObject();
                             jsonObject.put("message","上传失败,文件类型不合法");
-
                             printWriter = response.getWriter();
                             printWriter.println(jsonObject);
                             printWriter.close();
@@ -123,14 +121,12 @@ public class UserController extends HttpServlet {
                         }
                         out.close();
                         in.close();
-                        JSONObject jsonObject = new JSONObject();
                         jsonObject.put("message","上传成功");
                         session.setAttribute("message","上传成功");
                         resultStr = fileName;
                     }
                 }
             } catch (FileUploadException e) {
-                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("message","上传失败");
                 printWriter = response.getWriter();
                 printWriter.println(jsonObject);
@@ -209,14 +205,12 @@ public class UserController extends HttpServlet {
                 System.out.println("输出新图片");
             }
             if ("上传成功".equals(session.getAttribute("message"))) {
-                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("targetFile","http://imgword.codeplus.club/WebContent/resultImg/"+realFilename);
                 printWriter = response.getWriter();
                 printWriter.println(jsonObject);
                 printWriter.close();
                 //response.sendRedirect("/result.jsp");
             } else {
-                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("changeMsg","转换失败");
                 printWriter = response.getWriter();
                 printWriter.println(jsonObject);
