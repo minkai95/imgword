@@ -225,6 +225,7 @@ public class UserController extends HttpServlet {
             response.reset();
             // 允许跨域
             setResponseAccess(response);
+            response.setContentType("text/json; charset=utf-8");
             String filename = request.getParameter("realFilename");
             String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/resultImg";
             // 设置响应头，控制浏览器下载该文件
