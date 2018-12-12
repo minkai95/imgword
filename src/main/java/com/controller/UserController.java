@@ -223,6 +223,8 @@ public class UserController extends HttpServlet {
         } else {
             // 下载图片
             response.reset();
+            // 允许跨域
+            setResponseAccess(response);
             String filename = request.getParameter("realFilename");
             String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/resultImg";
             // 设置响应头，控制浏览器下载该文件
