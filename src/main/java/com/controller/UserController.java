@@ -28,6 +28,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import net.sf.json.JSONObject;
 
+import com.tool.ImgUtil;
+
 @WebServlet(name = "/UserController", urlPatterns = { "/UserController" })
 public class UserController extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -62,14 +64,12 @@ public class UserController extends HttpServlet {
             factory.setSizeThreshold(1024 * 500);// 设置内存的临界值为500K
             String tempPath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/linshi";
             File linshi = new File(tempPath);// 当超过500K的时候，存到一个临时文件夹中
-            if (!linshi.exists() || !linshi.isDirectory()) {
-                linshi.mkdirs();
-            }
+            createDir(linshi);
             factory.setRepository(linshi);
             upload.setSizeMax(1024 * 1024 * 5);// 设置上传的文件总的大小不能超过5M
             String resultStr = null;
             String text = null;
-            Integer quality = 1;
+            int quality = 1;
             String uid = getUUID();
             String realFilename = null;
             String filePath = this.getServletConfig().getServletContext().getRealPath("/") + "WebContent/srcImage";
@@ -103,7 +103,6 @@ public class UserController extends HttpServlet {
                         if (!fileFormat.contains(fileExtName.toLowerCase())) {
                             session.setAttribute("message", "上传失败,文件类型不合法！");
                             jsonObject.put("message","上传失败,文件类型不合法");
-                            printWriter = response.getWriter();
                             printWriter.println(jsonObject);
                             printWriter.close();
                             return;
@@ -113,9 +112,7 @@ public class UserController extends HttpServlet {
                         int len = 0;
 
                         File path = new File(filePath);
-                        if (!path.exists() || !path.isDirectory()) {
-                            path.mkdirs();
-                        }
+                        createDir(path);
                         fileName = filePath + "/" + realFilename;// 文件最终上传的位置
                         System.out.println(fileName);
                         OutputStream out = new FileOutputStream(fileName);
@@ -127,18 +124,17 @@ public class UserController extends HttpServlet {
                         jsonObject.put("message","上传成功");
                         session.setAttribute("message","上传成功");
                         resultStr = fileName;
+                        // 旋转并压缩图片
+                        ImgUtil.judgeRotate(fileName);
                         // 将文件copy到磁盘中
                         String srcImgDisk = "/developer/imgwordFile/srcImg/";
                         File srcImgDiskPath = new File(srcImgDisk);
-                        if (!srcImgDiskPath.exists() || !srcImgDiskPath.isDirectory()) {
-                            srcImgDiskPath.mkdirs();
-                        }
+                        createDir(srcImgDiskPath);
                         copyImg(fileName,srcImgDisk+realFilename);
                     }
                 }
             } catch (FileUploadException e) {
                 jsonObject.put("message","上传失败");
-                printWriter = response.getWriter();
                 printWriter.println(jsonObject);
                 printWriter.close();
                 e.printStackTrace();
@@ -199,7 +195,7 @@ public class UserController extends HttpServlet {
                 if (!newImgPathFile.exists() || !newImgPathFile.isDirectory()) {
                     newImgPathFile.mkdirs();
                 }
-		String finalImgPath = newImgPath + "/" + realFilename;
+		        String finalImgPath = newImgPath + "/" + realFilename;
                 ImageIO.write(bimg, "JPG", new FileOutputStream(finalImgPath));
                 is.close();
                 for (int i = 0; i < 10; i++) {
@@ -214,23 +210,19 @@ public class UserController extends HttpServlet {
                     }
                 }
                 System.out.println("输出新图片");
-		// 将文件copy到磁盘中
-		String resultImgDisk = "/developer/imgwordFile/resultImg/";
-		File resultImgDiskPath = new File(resultImgDisk);
-		if (!resultImgDiskPath.exists() || !resultImgDiskPath.isDirectory()) {
-		    resultImgDiskPath.mkdirs();
-		}
-		copyImg(finalImgPath,resultImgDisk+realFilename);
+                // 将文件copy到磁盘中
+                String resultImgDisk = "/developer/imgwordFile/resultImg/";
+                File resultImgDiskPath = new File(resultImgDisk);
+                createDir(resultImgDiskPath);
+                copyImg(finalImgPath,resultImgDisk+realFilename);
             }
             if ("上传成功".equals(session.getAttribute("message"))) {
                 jsonObject.put("targetFile","http://imgword.codeplus.club/WebContent/resultImg/"+realFilename);
-                printWriter = response.getWriter();
                 printWriter.println(jsonObject);
                 printWriter.close();
                 //response.sendRedirect("/result.jsp");
             } else {
                 jsonObject.put("changeMsg","转换失败");
-                printWriter = response.getWriter();
                 printWriter.println(jsonObject);
                 printWriter.close();
                 System.out.println("转换失败");
@@ -252,7 +244,7 @@ public class UserController extends HttpServlet {
             // 创建输出流
             OutputStream out = response.getOutputStream();
             // 创建缓冲区
-            byte buffer[] = new byte[1024];
+            byte[] buffer = new byte[1024];
             int len = 0;
             // 循环将输入流中的内容读取到缓冲区当中
             while ((len = in.read(buffer)) > 0) {
@@ -274,7 +266,7 @@ public class UserController extends HttpServlet {
      * @param y      图像上指定像素位置的y坐标。
      * @return 返回包含rgb 颜色分量值的数组。元素 index 由小到大分别对应 r，g，b。
      */
-    public static int[] getRGB(BufferedImage image, int x, int y) {
+    private static int[] getRGB(BufferedImage image, int x, int y) {
         //System.out.println(x + " " + y);
         int[] rgb = new int[3];
         int pixel = image.getRGB(x, y);
@@ -291,7 +283,7 @@ public class UserController extends HttpServlet {
      * @param height  图片高
      * @param src     图片路径
      */
-    public static void createImage(int width, int height, String src) {
+    private static void createImage(int width, int height, String src) {
         File file = new File(src);
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = (Graphics2D) bi.getGraphics();
@@ -304,7 +296,7 @@ public class UserController extends HttpServlet {
         }
     }
 
-    public static String getUUID() {
+    private static String getUUID() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
@@ -345,4 +337,14 @@ public class UserController extends HttpServlet {
 			}
 		}
 	}
+
+    /**
+     * 创建文件夹
+     * @param fileDir 目录
+     */
+	private void createDir(File fileDir){
+        if (!fileDir.exists() || !fileDir.isDirectory()) {
+            fileDir.mkdirs();
+        }
+    }
 }

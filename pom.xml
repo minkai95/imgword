@@ -21,6 +21,13 @@
 
   <dependencies>
 
+    <!--旋转图片-->
+    <dependency>
+      <groupId>com.drewnoakes</groupId>
+      <artifactId>metadata-extractor</artifactId>
+      <version>2.11.0</version>
+    </dependency>
+
     <!-- json 依赖 -->
     <dependency>
       <groupId>net.sf.json-lib</groupId>
