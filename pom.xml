@@ -116,9 +116,9 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>2.3.2</version>
           <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
-            <encoding>${project.build.sourceEncoding}</encoding>
+            <source>1.7</source>
+            <target>1.7</target>
+            <encoding>utf-8</encoding>
             <compilerArguments>
               <verbose />
               <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
