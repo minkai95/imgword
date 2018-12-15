@@ -152,8 +152,8 @@ public class ImgUtil {
             //获取图片大小
             fc = newimage.getChannel();
             //1M
-            if (fc.size() > 5 * 1024 * 1024) {
-                quality = (float) (5 * 1024 * 1024.00 / fc.size() * 0.5);
+            if (fc.size() > 1 * 1024 * 1024) {
+                quality = (float) (1 * 1024 * 1024.00 / fc.size() * 0.5);
             }
 
             JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(newimage);
