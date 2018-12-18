@@ -217,7 +217,7 @@ public class UserController extends HttpServlet {
                 File f = new File(finalImgPath);
                 //压缩3M以上的图片
                 if (f.length()>= 3*1024*1024) {
-                    ImgUtil.compressImage(finalImgPath, newImgPath, realFilename);
+                    ImgUtil.compressImage(finalImgPath, newImgPath+"/", realFilename);
                 }else {
                     System.out.println("输出图片小于3M不用压缩");
                 }
