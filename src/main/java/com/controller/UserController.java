@@ -130,7 +130,7 @@ public class UserController extends HttpServlet {
                         String srcImgDisk = "/developer/imgwordFile/srcImg/";
                         File srcImgDiskPath = new File(srcImgDisk);
                         createDir(srcImgDiskPath);
-                        copyImg(fileName,srcImgDisk+realFilename);
+                        ImgUtil.copyImg(fileName,srcImgDisk+realFilename);
                     }
                 }
             } catch (FileUploadException e) {
@@ -210,11 +210,19 @@ public class UserController extends HttpServlet {
                     }
                 }
                 System.out.println("输出新图片");
-                // 将文件copy到磁盘中
                 String resultImgDisk = "/developer/imgwordFile/resultImg/";
                 File resultImgDiskPath = new File(resultImgDisk);
                 createDir(resultImgDiskPath);
-                copyImg(finalImgPath,resultImgDisk+realFilename);
+                // 压缩图片
+                File f = new File(finalImgPath);
+                //压缩3M以上的图片
+                if (f.length()>= 3*1024*1024) {
+                    ImgUtil.compressImage(finalImgPath, newImgPath, realFilename);
+                }else {
+                    System.out.println("输出图片小于3M不用压缩");
+                }
+                // 将文件copy到磁盘中
+                ImgUtil.copyImg(finalImgPath,resultImgDisk+realFilename);
             }
             if ("上传成功".equals(session.getAttribute("message"))) {
                 jsonObject.put("targetFile","http://imgword.codeplus.club/WebContent/resultImg/"+realFilename);
@@ -313,30 +321,6 @@ public class UserController extends HttpServlet {
         /* 是否携带cookie */
         response.setHeader("Access-Control-Allow-Credentials", "true"); 
     }
-    
-    // copy文件到服务器
-    private void copyImg(String srcImg,String targetDir) {
-		File file = new File(srcImg);
-		if (!file.exists() || !file.isFile()) {
-			System.out.println("源文件不存在");
-			return;
-		}
-		Path source = Paths.get(srcImg);
-		OutputStream out = null;
-		try {
-			out = new FileOutputStream(targetDir);
-			Files.copy(source, out);
-			System.out.println("copy成功");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
     /**
      * 创建文件夹

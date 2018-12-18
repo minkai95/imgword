@@ -14,6 +14,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
 /**
@@ -101,7 +104,7 @@ public class ImgUtil {
             e.printStackTrace();
         }
         // 调用方法输出图片文件
-        outImage(file.getPath(), bi, (float) 0.5);
+        outImage(file.getPath(), bi, (float) 1.0);
         return file;
     }
 
@@ -178,7 +181,7 @@ public class ImgUtil {
      * @param srcImgPath
      * @return
      */
-    public static BufferedImage inputImage(String srcImgPath) {
+    private static BufferedImage inputImage(String srcImgPath) {
         BufferedImage srcImage = null;
         File file = new File(srcImgPath);
         try {
@@ -192,6 +195,62 @@ public class ImgUtil {
             e.printStackTrace();
         }
         return srcImage;
+    }
+
+    /**
+     * 压缩图片
+     * @param srcFilePathName 源图片的路径+名称
+     * @param newPath 新路径
+     * @param newFileName 新名称
+     * @return Boolean
+     */
+    public static boolean compressImage(String srcFilePathName, String newPath, String newFileName) {
+        try {
+            Image src = ImageIO.read(new FileInputStream(srcFilePathName)); // construct the Image Object
+            int width=src.getWidth(null); // get the width
+            int height=src.getHeight(null); // get the height
+            // Compress Image
+            BufferedImage tag = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+            tag.getGraphics().drawImage(src,0,0,width,height,null); // 尺寸不变
+            FileOutputStream out=new FileOutputStream(newPath + newFileName);
+            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+            JPEGEncodeParam encoder_param = encoder.getDefaultJPEGEncodeParam(tag);
+            encoder_param.setQuality((float) 0.25,true); // Image compress rate
+            encoder.setJPEGEncodeParam(encoder_param);
+            encoder.encode(tag);
+            out.close();
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.out.println("图片压缩异常");
+            return false;
+        }
+    }
+
+    // copy文件
+    public static void copyImg(String srcImg,String targetDir) {
+        File file = new File(srcImg);
+        if (!file.exists() || !file.isFile()) {
+            System.out.println("源文件不存在");
+            return;
+        }
+        Path source = Paths.get(srcImg);
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(targetDir);
+            Files.copy(source, out);
+            System.out.println("copy成功");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out!=null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
