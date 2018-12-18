@@ -202,9 +202,8 @@ public class ImgUtil {
      * @param srcFilePathName 源图片的路径+名称
      * @param newPath 新路径
      * @param newFileName 新名称
-     * @return Boolean
      */
-    public static boolean compressImage(String srcFilePathName, String newPath, String newFileName) {
+    public static void compressImage(String srcFilePathName, String newPath, String newFileName) {
         try {
             Image src = ImageIO.read(new FileInputStream(srcFilePathName)); // construct the Image Object
             int width=src.getWidth(null); // get the width
@@ -219,11 +218,10 @@ public class ImgUtil {
             encoder.setJPEGEncodeParam(encoder_param);
             encoder.encode(tag);
             out.close();
-            return true;
+            System.out.println("压缩完成");
         } catch(Exception e) {
             e.printStackTrace();
             System.out.println("图片压缩异常");
-            return false;
         }
     }
 
