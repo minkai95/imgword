@@ -10,12 +10,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,12 +35,12 @@ public class UserController extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         doPost(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         response.setContentType("text/json; charset=utf-8");
         // 允许跨域
         setResponseAccess(response);
@@ -109,7 +105,7 @@ public class UserController extends HttpServlet {
                         }
                         InputStream in = item.getInputStream();
                         byte[] buffer = new byte[1024];
-                        int len = 0;
+                        int len;
 
                         File path = new File(filePath);
                         createDir(path);
@@ -161,7 +157,7 @@ public class UserController extends HttpServlet {
                 // 设置画笔粗细
                 g2d.setStroke(new BasicStroke(1));
                 g2d.setFont(new Font("宋体", Font.PLAIN, 12));
-                int size = 0;
+                int size;
                 if (quality == 1) {
                     size = 36;
                 } else if (quality == 2) {
@@ -172,7 +168,7 @@ public class UserController extends HttpServlet {
                 for (int i = 0; i <= srcImageWidth - size; i += size) {
                     for (int j = 0; j <= srcImageHeight - size; j += size) {
                         int r = 0, g = 0, b = 0;
-                        int[] rgb = null;
+                        int[] rgb;
                         for (int m = i; m < i + size; m += 3) {
                             for (int n = j; n < j + size; n += 3) {
                                 int[] targetRGB = getRGB(srcImage, m, n);
@@ -192,9 +188,7 @@ public class UserController extends HttpServlet {
                 String newImgPath = newImageSrc.substring(0, newImageSrc.lastIndexOf("/"));
                 newImgPath = newImgPath.substring(0, newImgPath.lastIndexOf("/") + 1) + "resultImg";
                 File newImgPathFile = new File(newImgPath);
-                if (!newImgPathFile.exists() || !newImgPathFile.isDirectory()) {
-                    newImgPathFile.mkdirs();
-                }
+                createDir(newImgPathFile);
 		        String finalImgPath = newImgPath + "/" + realFilename;
                 ImageIO.write(bimg, "JPG", new FileOutputStream(finalImgPath));
                 is.close();
@@ -253,7 +247,7 @@ public class UserController extends HttpServlet {
             OutputStream out = response.getOutputStream();
             // 创建缓冲区
             byte[] buffer = new byte[1024];
-            int len = 0;
+            int len;
             // 循环将输入流中的内容读取到缓冲区当中
             while ((len = in.read(buffer)) > 0) {
                 // 输出缓冲区的内容到浏览器，实现文件下载

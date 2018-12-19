@@ -19,13 +19,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
-/**
- * reference:https://blog.csdn.net/u010361786/article/details/80511073
- */
 public class ImgUtil {
 
     /**
      * 旋转图片调用方法
+     * reference:https://blog.csdn.net/u010361786/article/details/80511073
      */
     public static void judgeRotate(String fileName) {
         //获取图片旋转角度
