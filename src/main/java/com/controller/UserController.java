@@ -7,7 +7,9 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,8 +126,7 @@ public class UserController extends HttpServlet {
                         ImgUtil.judgeRotate(fileName);
                         // 将文件copy到磁盘中
                         String srcImgDisk = "/developer/imgwordFile/srcImg/";
-                        File srcImgDiskPath = new File(srcImgDisk);
-                        createDir(srcImgDiskPath);
+                        srcImgDisk = srcImgDisk + getDate();
                         ImgUtil.copyImg(fileName,srcImgDisk+realFilename);
                     }
                 }
@@ -205,8 +206,7 @@ public class UserController extends HttpServlet {
                 }
                 System.out.println("输出新图片");
                 String resultImgDisk = "/developer/imgwordFile/resultImg/";
-                File resultImgDiskPath = new File(resultImgDisk);
-                createDir(resultImgDiskPath);
+                resultImgDisk = resultImgDisk + getDate();
                 // 压缩图片
                 File f = new File(finalImgPath);
                 //压缩3M以上的图片
@@ -324,5 +324,15 @@ public class UserController extends HttpServlet {
         if (!fileDir.exists() || !fileDir.isDirectory()) {
             fileDir.mkdirs();
         }
+    }
+
+    /**
+     * 获取此时服务器时间年月日
+     * @return String
+     */
+    private String getDate(){
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd/");
+        return sdf.format(date);
     }
 }
