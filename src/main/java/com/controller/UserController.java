@@ -323,6 +323,7 @@ public class UserController extends HttpServlet {
 	private void createDir(File fileDir){
         if (!fileDir.exists() || !fileDir.isDirectory()) {
             fileDir.mkdirs();
+            System.out.println("新建文件夹:"+fileDir.getAbsolutePath());
         }
     }
 

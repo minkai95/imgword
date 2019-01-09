@@ -230,7 +230,7 @@ public class ImgUtil {
             System.out.println("源文件不存在");
             return;
         }
-        File tarDir = new File(targetDir);
+        File tarDir = new File(targetDir.substring(0,targetDir.lastIndexOf("/")));
         if(!tarDir.exists() || !tarDir.isDirectory()){
             System.out.println("目标目录不存在,新建");
             tarDir.mkdirs();
