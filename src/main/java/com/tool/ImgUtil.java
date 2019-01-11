@@ -17,7 +17,6 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 
 public class ImgUtil {
 
@@ -46,8 +45,7 @@ public class ImgUtil {
             //分别遍历每一个Directory，根据Directory的Tags就可以读取到相应的信息
             int orientation = 0;
             Iterable<Directory> iterable = metadata.getDirectories();
-            for (Iterator<Directory> iter = iterable.iterator(); iter.hasNext(); ) {
-                Directory dr = iter.next();
+            for (Directory dr: iterable) {
                 if (dr.getString(ExifIFD0Directory.TAG_ORIENTATION) != null) {
                     orientation = dr.getInt(ExifIFD0Directory.TAG_ORIENTATION);
                 }
@@ -85,8 +83,12 @@ public class ImgUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        int src_width = src.getWidth(null);
-        int src_height = src.getHeight(null);
+        int src_width = 0;
+        int src_height = 0;
+        if (src !=null) {
+            src_width = src.getWidth(null);
+            src_height = src.getHeight(null);
+        }
         Rectangle rect_des = calcRotatedSize(new Rectangle(new Dimension(src_width, src_height)), angel);
 
         BufferedImage bi = new BufferedImage(rect_des.width, rect_des.height, BufferedImage.TYPE_INT_RGB);
@@ -149,21 +151,21 @@ public class ImgUtil {
         // 输出到文件流
         FileChannel fc;
         try {
-            FileOutputStream newimage = new FileOutputStream(outImgPath);
+            FileOutputStream newImage = new FileOutputStream(outImgPath);
             //获取图片大小
-            fc = newimage.getChannel();
+            fc = newImage.getChannel();
             //1M
             if (fc.size() > 1 * 1024 * 1024) {
                 //quality = (float) (1 * 1024 * 1024.00 / fc.size());
                 quality = (float) 0.5;
             }
 
-            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(newimage);
+            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(newImage);
             JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(newImg);
             // 压缩质量
             jep.setQuality(quality, true);
             encoder.encode(newImg, jep);
-            newimage.close();
+            newImage.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (ImageFormatException e) {
